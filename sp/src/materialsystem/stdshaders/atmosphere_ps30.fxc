@@ -50,7 +50,8 @@ const float4 g_AtmosphereControl				: register(c27);
 #define g_GradientPower (g_AtmosphereControl.w)
 #define g_TransparencyFactor (g_AtmosphereControl.x)
 
-const float4 g_NewEyePos						: register(c5);
+const float4 g_NewEyePos						: register(c5); // Note : If you recompile this shader, move this into PSREG_EYEPOS_SPEC_EXPONENT and use g_EyePos instead
+// this is technically free and just a remainder of some debugging
 
  // PSREG Total
  // c0, c1 ,c2 ,c4, c5, c6, c7, c8, c9, c11, c12, c13, c14, c15 ,c16 ,c17 ,c18 ,c20 ,c21 ,c22 ,c23 ,c24 ,c25
@@ -149,6 +150,8 @@ float3 diffuseLighting = 1.0f;
 
 	diffuseComponent *= gradient;
 
+	// You can practically ignore this, its nonfunctional
+	// Transparency in the 3d skybox is kinda wonky so use $additive instead
 	alpha *= gradient * g_TransparencyFactor;
 	alpha *= g_DiffuseModulation.a;
 

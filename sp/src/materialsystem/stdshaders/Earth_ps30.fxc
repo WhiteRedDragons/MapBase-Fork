@@ -214,6 +214,10 @@ if (FLASHLIGHT)
 
 	NightSide = NightSide - (NightSide * saturate(diffuseLighting));
 
+// WRD :	You CAN use one model. However I advise you to use two models.
+//			The lighting can be kinda small in its fade, so using a second model with a black side,
+//			you can use $additive to have a harder cut for one of the two textures - In Lighting.
+
 	float3 DiffuseComponent = lerp(NightSide, DaySide, LightMask);
 
 #if ENVIRONMENTMAPPING == 1
@@ -225,7 +229,7 @@ if (FLASHLIGHT)
 		float3 reflectVect = normalize(CalcReflectionVectorUnnormalized( i.worldNormal, worldVertToEyeVector ));
 		SpecularLighting = ENV_MAP_SCALE * texCUBE( EnvironmentMapSampler, reflectVect );
 
-		//	Compute BaseAlpha Specularfactor
+		//	Compute Environment Mappping Mask
 		float3 EnvMapMaskTexture = tex2D( EnvMapMaskSampler,  correctedTexCoord).xyz;
 
 		DiffuseComponent += ( SpecularLighting * EnvMapMaskTexture	);
