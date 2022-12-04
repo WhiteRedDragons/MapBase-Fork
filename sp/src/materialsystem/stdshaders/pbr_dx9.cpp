@@ -225,11 +225,15 @@ BEGIN_VS_SHADER(PBR, "PBR shader")
 		//	if (!params[BUMPMAP2]->IsDefined())
 		//	params[BUMPMAP2]->SetStringValue("dev/flat_normal");
 
-		if (!params[MRAOTEXTURE2]->IsDefined())
-			params[MRAOTEXTURE2]->SetStringValue("dev/pbr_mraotexture");
-
-        // Set a good default mrao texture
-        if (!params[MRAOTEXTURE]->IsDefined())
+		// WRD : we make a check for Basetexture2 so the annoying error goes away that this texture doesn't even exist...
+		// NOTE: how about including it or entirely removing it, whats the point of this when this texture is not in the base?
+		if (params[BASETEXTURE2]->IsDefined())
+		{
+			if (!params[MRAOTEXTURE2]->IsDefined())
+				params[MRAOTEXTURE2]->SetStringValue("dev/pbr_mraotexture");
+		}
+		
+		if (!params[MRAOTEXTURE]->IsDefined())
             params[MRAOTEXTURE]->SetStringValue("dev/pbr_mraotexture");
 
         // PBR relies heavily on envmaps
@@ -266,11 +270,6 @@ BEGIN_VS_SHADER(PBR, "PBR shader")
 			LoadBumpMap(info.NormalTexture);
 		}
 
-		if (params[BUMPMAP2]->IsDefined())
-		{
-			LoadBumpMap(info.BumpMap2);
-		}
-
 		int envMapFlags = g_pHardwareConfig->GetHDRType() == HDR_TYPE_NONE ? TEXTUREFLAGS_SRGB : 0;
 		// WRD: This does NOT work. If any other material before the pbr one loads the envmap WITHOUT this flag, then loading it again here will NOT add it.
 		//		As a workaround, you can manually flag your cubemaps with the 'No Minimum Mipmap" flag to force this behaviour.
@@ -282,23 +281,12 @@ BEGIN_VS_SHADER(PBR, "PBR shader")
 		if (params[EMISSIONTEXTURE]->IsDefined())
 			LoadTexture(info.EmissionTexture, TEXTUREFLAGS_SRGB);
 
-		if (params[EMISSIONTEXTURE2]->IsDefined())
-			LoadTexture(info.EmissionTexture2, TEXTUREFLAGS_SRGB);
-
 		Assert(info.MRAOTexture >= 0);
 		LoadTexture(info.MRAOTexture, 0);
-
-		Assert(info.MRAOTexture2 >= 0);
-		LoadTexture(info.MRAOTexture2, 0);
 
 		if (params[info.BaseTexture]->IsDefined())
 		{
 			LoadTexture(info.BaseTexture, TEXTUREFLAGS_SRGB);
-		}
-
-		if (params[info.BaseTexture2]->IsDefined())
-		{
-			LoadTexture(info.BaseTexture2, TEXTUREFLAGS_SRGB);
 		}
 
 		//if (params[info.DetailTexture]->IsDefined())
@@ -315,6 +303,11 @@ BEGIN_VS_SHADER(PBR, "PBR shader")
 
         if (IS_FLAG_SET(MATERIAL_VAR_MODEL)) // Set material var2 flags specific to models
         {
+			// WRD : Model Lightmapping uses a texture via parameter.
+			if (params[info.LightmapTexture]->IsDefined())
+			{
+				LoadTexture(info.LightmapTexture, 0);
+			}
             SET_FLAGS2(MATERIAL_VAR2_SUPPORTS_HW_SKINNING);             // Required for skinning
             SET_FLAGS2(MATERIAL_VAR2_DIFFUSE_BUMPMAPPED_MODEL);         // Required for dynamic lighting
             SET_FLAGS2(MATERIAL_VAR2_NEEDS_TANGENT_SPACES);             // Required for dynamic lighting
@@ -329,6 +322,23 @@ BEGIN_VS_SHADER(PBR, "PBR shader")
             SET_FLAGS2(MATERIAL_VAR2_LIGHTING_BUMPED_LIGHTMAP);         // Required for lightmaps
             SET_FLAGS2(MATERIAL_VAR2_SUPPORTS_FLASHLIGHT);              // Required for flashlight
             SET_FLAGS2(MATERIAL_VAR2_USE_FLASHLIGHT);                   // Required for flashlight
+			
+			// WRD: this is wvt stuff, aka only on *not models*
+			if (params[info.BaseTexture2]->IsDefined())
+			{
+				LoadTexture(info.BaseTexture2, TEXTUREFLAGS_SRGB);
+			}
+			
+			if (params[BUMPMAP2]->IsDefined())
+			{
+				LoadBumpMap(info.BumpMap2);
+			}
+		
+			if (params[EMISSIONTEXTURE2]->IsDefined())
+				LoadTexture(info.EmissionTexture2, TEXTUREFLAGS_SRGB);
+			
+			Assert(info.MRAOTexture2 >= 0);
+				LoadTexture(info.MRAOTexture2, 0);
         }
     };
 
