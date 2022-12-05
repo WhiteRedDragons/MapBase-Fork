@@ -11,7 +11,10 @@ $Configuration
 		$PreprocessorDefinitions		"$BASE;ASW_PROJECTED_TEXTURES;DYNAMIC_RTT_SHADOWS;GLOWS_ENABLE"
 		$PreprocessorDefinitions		"$BASE;MAPBASE_VSCRIPT"		[$MAPBASE_VSCRIPT]
 		$PreprocessorDefinitions		"$BASE;NEW_RESPONSE_SYSTEM"		[$NEW_RESPONSE_SYSTEM]
+<<<<<<< HEAD
 		$PreprocessorDefinitions		"$BASE;HL2_PLAYER_TALKER"		[$HL2_PLAYER_TALKER]
+=======
+>>>>>>> parent of ed8a36e6 (Revert to 6.3)
 	}
 }
 

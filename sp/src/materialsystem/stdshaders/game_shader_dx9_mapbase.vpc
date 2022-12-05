@@ -65,7 +65,11 @@ $Project
 		$File	"engine_post_dx9.cpp"
 		$File	"depthoffield_dx9.cpp"
 		
+<<<<<<< HEAD
 		$File	"pbr_dx9.cpp"
+=======
+		$File	"core_dx9.cpp"
+>>>>>>> parent of ed8a36e6 (Revert to 6.3)
 	}
 
 	//$Shaders	"mapbase_dx9_20b.txt"

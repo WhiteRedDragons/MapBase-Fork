@@ -680,6 +680,10 @@ void CViewRender::SetUpViews()
 	view.fovViewmodel = g_pClientMode->GetViewModelFOV();
 #endif
 
+#ifdef MAPBASE
+	view.fovViewmodel = g_pClientMode->GetViewModelFOV();
+#endif
+
 	if ( engine->IsHLTV() )
 	{
 		HLTVCamera()->CalcView( view.origin, view.angles, view.fov );
@@ -761,7 +765,11 @@ void CViewRender::SetUpViews()
 	float flFOVOffset = fDefaultFov - view.fov;
 
 	//Adjust the viewmodel's FOV to move with any FOV offsets on the viewer's end
+<<<<<<< HEAD
 #ifdef CSS_WEAPONS_IN_HL2 // This code originates from Mapbase v7.0. In the event of a merge conflict, it should take precedence over this code.
+=======
+#ifdef MAPBASE
+>>>>>>> parent of ed8a36e6 (Revert to 6.3)
 	view.fovViewmodel = max(0.001f, view.fovViewmodel - flFOVOffset);
 #else
 	view.fovViewmodel = g_pClientMode->GetViewModelFOV() - flFOVOffset;
