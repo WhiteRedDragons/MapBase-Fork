@@ -2025,8 +2025,7 @@ void CResponseSystem::ParseInclude( CStringPool &includedFiles )
 
 		if (len+1 != strlen(scriptfile))
 		{
-			Q_strncat( includefile, "/", sizeof( includefile ) );
-			Q_strncat( includefile, token, sizeof( includefile ) );
+			Q_snprintf(includefile, sizeof(includefile), "%s/%s", includefile, token);
 		}
 		else
 			includefile[0] = '\0';
