@@ -480,8 +480,8 @@ void CC_ToggleDuck( void )
 
 static ConCommand toggle_duck("toggle_duck", CC_ToggleDuck, "Toggles duck" );
 
-#ifndef HL2MP
-#ifndef PORTAL
+#if !defined( HL2MP ) && !defined(PORTAL) && !defined(MAPLAB)
+#ifndef HL2_PLAYER_TALKER
 LINK_ENTITY_TO_CLASS( player, CHL2_Player );
 #endif
 #endif
@@ -3357,10 +3357,9 @@ bool CHL2_Player::Weapon_CanUse( CBaseCombatWeapon *pWeapon )
 		}
 	}
 #else
-	if ( pWeapon->ClassMatches( "weapon_stunstick" ) )
 	{
-		if ( ApplyBattery( 0.5 ) )
-			UTIL_Remove( pWeapon );
+		if (ApplyBattery(0.5))
+			UTIL_Remove(pWeapon);
 		return false;
 	}
 #endif

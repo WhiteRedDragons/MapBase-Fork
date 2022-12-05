@@ -81,7 +81,7 @@ class CHudVote;
 
 static vgui::HContext s_hVGuiContext = DEFAULT_VGUI_CONTEXT;
 
-ConVar cl_drawhud( "cl_drawhud", "1", FCVAR_CHEAT, "Enable the rendering of the hud" );
+ConVar cl_drawhud( "cl_drawhud", "1", FCVAR_CLIENTDLL, "Enable the rendering of the hud" );
 #ifdef DEMO_AUTORECORD
 ConVar cl_autorecord("cl_autorecord", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Start recording demos automatically with an incremental name based on this value.");
 #endif

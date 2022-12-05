@@ -934,7 +934,7 @@ void CAmbientGeneric::InputStopSound( inputdata_t &inputdata )
 	}
 }
 
-void CAmbientGeneric::SendSound( SoundFlags_t flags)
+void CAmbientGeneric::SendSound(SoundFlags_t flags)
 {
 #ifdef MAPBASE
 	int iFlags = flags != SND_STOP ? ((int)flags | m_iSoundFlags) : flags;
@@ -953,6 +953,14 @@ void CAmbientGeneric::SendSound( SoundFlags_t flags)
 		}
 		else
 		{
+			// Map Labs - Mapbase has its own option for pausing sound when the game is paused,
+			// but Map Labs just does that for every sound, so the flag has been repurposed to
+			// make the game *not* pause when the game is paused. (Blixibon)
+			if (iFlags & SND_SHOULDPAUSE)
+				iFlags &= ~SND_SHOULDPAUSE;
+			else
+				iFlags |= SND_SHOULDPAUSE;
+
 			float duration = 0.0f;
 			UTIL_EmitAmbientSound(pSoundSource->GetSoundSourceIndex(), pSoundSource->GetAbsOrigin(), szSoundFile, 
 				(m_dpv.vol * 0.01), m_iSoundLevel, iFlags, m_dpv.pitch, 0.0f, &duration);
@@ -982,28 +990,38 @@ void CAmbientGeneric::SendSound( SoundFlags_t flags)
 		}
 	}
 #else
-	char *szSoundFile = (char *)STRING( m_iszSound );
+	char *szSoundFile = (char *)STRING(m_iszSound);
 	CBaseEntity* pSoundSource = m_hSoundSource;
-	if ( pSoundSource )
+	if (pSoundSource)
 	{
-		if ( flags == SND_STOP )
+		if (flags == SND_STOP)
 		{
-			UTIL_EmitAmbientSound(pSoundSource->GetSoundSourceIndex(), pSoundSource->GetAbsOrigin(), szSoundFile, 
-						0, SNDLVL_NONE, flags, 0);
+			UTIL_EmitAmbientSound(pSoundSource->GetSoundSourceIndex(), pSoundSource->GetAbsOrigin(), szSoundFile,
+				0, SNDLVL_NONE, flags, 0);
+			m_fActive = false;
 		}
 		else
 		{
-			UTIL_EmitAmbientSound(pSoundSource->GetSoundSourceIndex(), pSoundSource->GetAbsOrigin(), szSoundFile, 
+			UTIL_EmitAmbientSound(pSoundSource->GetSoundSourceIndex(), pSoundSource->GetAbsOrigin(), szSoundFile,
 				(m_dpv.vol * 0.01), m_iSoundLevel, flags, m_dpv.pitch);
+
+			// Only mark active if this is a looping sound.  If not looping, each
+			// trigger will cause the sound to play.  If the sound is still
+			// playing from a previous trigger press, it will be shut off
+			// and then restarted.
+
+			if (m_fLooping)
+				m_fActive = true;
 		}
-	}	
+	}
 	else
 	{
-		if ( ( flags == SND_STOP ) && 
-			( m_nSoundSourceEntIndex != -1 ) )
+		if ((flags == SND_STOP) &&
+			(m_nSoundSourceEntIndex != -1))
 		{
-			UTIL_EmitAmbientSound(m_nSoundSourceEntIndex, GetAbsOrigin(), szSoundFile, 
-					0, SNDLVL_NONE, flags, 0);
+			UTIL_EmitAmbientSound(m_nSoundSourceEntIndex, GetAbsOrigin(), szSoundFile,
+				0, SNDLVL_NONE, flags, 0);
+			m_fActive = false;
 		}
 	}
 #endif
@@ -1015,7 +1033,6 @@ void CAmbientGeneric::SoundEnd()
 	m_OnSoundFinished.FireOutput(this, this);
 }
 #endif
-
 
 //-----------------------------------------------------------------------------
 // Purpose: Input handler that stops playing the sound.

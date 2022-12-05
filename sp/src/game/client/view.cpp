@@ -107,10 +107,11 @@ extern ConVar cl_forwardspeed;
 static ConVar v_centermove( "v_centermove", "0.15");
 static ConVar v_centerspeed( "v_centerspeed","500" );
 
-#ifdef TF_CLIENT_DLL
+#if defined(TF_CLIENT_DLL) || defined(MAPBASE)
 // 54 degrees approximates a 35mm camera - we determined that this makes the viewmodels
 // and motions look the most natural.
 ConVar v_viewmodel_fov( "viewmodel_fov", "54", FCVAR_ARCHIVE );
+ConVar v_viewmodel_fov_script_override( "viewmodel_fov_script_override", "0", FCVAR_NONE, "If nonzero, overrides the viewmodel FOV of weapon scripts which override the viewmodel FOV." );
 #else
 ConVar v_viewmodel_fov( "viewmodel_fov", "54", FCVAR_CHEAT );
 #endif
@@ -674,6 +675,10 @@ void CViewRender::SetUpViews()
 	bool bCalcViewModelView = false;
 	Vector ViewModelOrigin;
 	QAngle ViewModelAngles;
+	
+#ifdef MAPBASE
+	view.fovViewmodel = g_pClientMode->GetViewModelFOV();
+#endif
 
 	if ( engine->IsHLTV() )
 	{
@@ -710,6 +715,18 @@ void CViewRender::SetUpViews()
 			bCalcViewModelView = true;
 			ViewModelOrigin = view.origin;
 			ViewModelAngles = view.angles;
+
+#ifdef MAPBASE
+			// Allow weapons to override viewmodel FOV
+			C_BaseCombatWeapon *pWeapon = pPlayer->GetActiveWeapon();
+			if (pWeapon && pWeapon->GetViewmodelFOVOverride() != 0.0f)
+			{
+				if (v_viewmodel_fov_script_override.GetFloat() > 0.0f)
+					view.fovViewmodel = v_viewmodel_fov_script_override.GetFloat();
+				else
+					view.fovViewmodel = pWeapon->GetViewmodelFOVOverride();
+			}
+#endif
 		}
 		else
 		{
@@ -744,8 +761,8 @@ void CViewRender::SetUpViews()
 	float flFOVOffset = fDefaultFov - view.fov;
 
 	//Adjust the viewmodel's FOV to move with any FOV offsets on the viewer's end
-#ifdef MAPBASE
-	view.fovViewmodel = fabs(g_pClientMode->GetViewModelFOV()) - flFOVOffset;
+#ifdef CSS_WEAPONS_IN_HL2 // This code originates from Mapbase v7.0. In the event of a merge conflict, it should take precedence over this code.
+	view.fovViewmodel = max(0.001f, view.fovViewmodel - flFOVOffset);
 #else
 	view.fovViewmodel = g_pClientMode->GetViewModelFOV() - flFOVOffset;
 #endif

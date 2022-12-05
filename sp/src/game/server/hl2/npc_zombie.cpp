@@ -302,7 +302,6 @@ void CZombie::Spawn( void )
 
 	m_fIsHeadless = false;
 #endif
-
 #ifdef HL2_EPISODIC
 	SetBloodColor( BLOOD_COLOR_ZOMBIE );
 #else

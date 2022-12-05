@@ -511,7 +511,7 @@ public:
 			params.soundname, 
 			params.soundlevel, 
 			params.volume, 
-			ep.m_nFlags, 
+			ep.m_nFlags | SND_SHOULDPAUSE, 
 			params.pitch, 
 			ep.m_pOrigin, 
 			ep.m_flSoundTime,
@@ -541,7 +541,7 @@ public:
 			params.soundname,
 			params.volume,
 			(soundlevel_t)params.soundlevel,
-			ep.m_nFlags,
+			ep.m_nFlags | SND_SHOULDPAUSE,
 #ifdef MAPBASE
 			params.pitch * GetSoundPitchScale(),
 #else
@@ -596,7 +596,7 @@ public:
 				ep.m_pSoundName, 
 				ep.m_SoundLevel, 
 				ep.m_flVolume, 
-				ep.m_nFlags, 
+				ep.m_nFlags | SND_SHOULDPAUSE,
 				ep.m_nPitch, 
 				ep.m_pOrigin, 
 				ep.m_flSoundTime,
@@ -624,7 +624,7 @@ public:
 				ep.m_pSoundName, 
 				ep.m_flVolume, 
 				ep.m_SoundLevel, 
-				ep.m_nFlags, 
+				ep.m_nFlags | SND_SHOULDPAUSE,
 #ifdef MAPBASE
 				ep.m_nPitch * GetSoundPitchScale(),
 #else
@@ -856,9 +856,9 @@ public:
 #endif
 
 #if defined( CLIENT_DLL )
-		enginesound->EmitAmbientSound( params.soundname, params.volume, params.pitch, iFlags, soundtime );
+		enginesound->EmitAmbientSound( params.soundname, params.volume, params.pitch, iFlags | SND_SHOULDPAUSE, soundtime );
 #else
-		engine->EmitAmbientSound(entindex, origin, params.soundname, params.volume, params.soundlevel, iFlags, params.pitch, soundtime );
+		engine->EmitAmbientSound(entindex, origin, params.soundname, params.volume, params.soundlevel, iFlags | SND_SHOULDPAUSE, params.pitch, soundtime );
 #endif
 
 		bool needsCC = !( iFlags & ( SND_STOP | SND_CHANGE_VOL | SND_CHANGE_PITCH ) );
@@ -1436,7 +1436,7 @@ void UTIL_EmitAmbientSound( int entindex, const Vector &vecOrigin, const char *s
 #if !defined( CLIENT_DLL )
 			engine->EmitAmbientSound( entindex, vecOrigin, name, vol, soundlevel, fFlags, pitch, soundtime );
 #else
-			enginesound->EmitAmbientSound( name, vol, pitch, fFlags, soundtime );
+			enginesound->EmitAmbientSound( name, vol, pitch, fFlags | SND_SHOULDPAUSE, soundtime );
 #endif
 			if ( duration )
 			{
