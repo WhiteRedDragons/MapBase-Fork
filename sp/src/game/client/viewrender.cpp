@@ -101,6 +101,8 @@ extern ConVar r_depthoverlay;
 extern ConVar mat_viewportscale;
 extern ConVar mat_viewportupscale;
 extern bool g_bDumpRenderTargets;
+ConVar r_TESTESTTEST("r_testtesttest", "0", FCVAR_CHEAT );
+// This is just a test...
 
 //-----------------------------------------------------------------------------
 // Convars related to controlling rendering
